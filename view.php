@@ -76,16 +76,16 @@ if (!$questionnaire->is_active()) {
     } else {
         $msg = 'notavail';
     }
-    echo '<div class="message">'
+    echo '<div class="alert alert-warning">'
     .get_string($msg, 'questionnaire')
     .'</div>';
 
 } else if (!$questionnaire->is_open()) {
-    echo '<div class="message">'
+    echo '<div class="alert alert-warning">'
     .get_string('notopen', 'questionnaire', userdate($questionnaire->opendate))
     .'</div>';
 } else if ($questionnaire->is_closed()) {
-    echo '<div class="message">'
+    echo '<div class="alert alert-warning">'
     .get_string('closed', 'questionnaire', userdate($questionnaire->closedate))
     .'</div>';
 } else if ($questionnaire->survey->realm == 'template') {
@@ -95,7 +95,7 @@ if (!$questionnaire->is_active()) {
     exit();
 } else if (!$questionnaire->user_is_eligible($USER->id)) {
     if ($questionnaire->questions) {
-        echo '<div class="message">'.get_string('noteligible', 'questionnaire').'</div>';
+        echo '<div class="alert alert-error">'.get_string('noteligible', 'questionnaire').'</div>';
     }
 } else if (!$questionnaire->user_can_take($USER->id)) {
     switch ($questionnaire->qtype) {
@@ -112,7 +112,7 @@ if (!$questionnaire->is_active()) {
             $msgstring = '';
             break;
     }
-    echo ('<div class="message">'.get_string("alreadyfilled", "questionnaire", $msgstring).'</div>');
+    echo ('<div class="alert alert-error">'.get_string("alreadyfilled", "questionnaire", $msgstring).'</div>');
 } else if ($questionnaire->user_can_take($USER->id)) {
     $select = 'survey_id = '.$questionnaire->survey->id.' AND username = \''.$USER->id.'\' AND complete = \'n\'';
     $resume = $DB->get_record_select('questionnaire_response', $select, null) !== false;
@@ -127,7 +127,7 @@ if (!$questionnaire->is_active()) {
     }
 }
 if ($questionnaire->is_active() && !$questionnaire->questions) {
-    echo '<p>'.get_string('noneinuse', 'questionnaire').'</p>';
+    echo '<div class="alert alert-warning">'.get_string('noneinuse', 'questionnaire').'</div>';
 }
 if ($questionnaire->is_active() && $questionnaire->capabilities->editquestions && !$questionnaire->questions) { // Sanity check.
     echo '<a href="'.$CFG->wwwroot.htmlspecialchars('/mod/questionnaire/questions.php?'.

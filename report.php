@@ -235,7 +235,7 @@ switch ($action) {
 
         // Print the confirmation.
         echo '<p>&nbsp;</p>';
-        $msg = '<div class="warning centerpara">';
+        $msg = '<div class="alert alert-warning centerpara">';
         $msg .= get_string('confirmdelresp', 'questionnaire', $ruser.$timesubmitted);
         $msg .= '</div>';
         $urlyes = new moodle_url('report.php', array('action' => 'dvresp',
@@ -264,15 +264,17 @@ switch ($action) {
             $SESSION->questionnaire->current_tab = 'deleteall';
             include('tabs.php');
 
+
             // Print the confirmation.
             echo '<p>&nbsp;</p>';
-            $msg = '<div class="warning centerpara">';
+            $msg = '<div class="alert alert-warning centerpara">';
             if ($groupmode == 0) {   // No groups or visible groups.
                 $msg .= get_string('confirmdelallresp', 'questionnaire');
             } else {                 // Separate groups.
                 $msg .= get_string('confirmdelgroupresp', 'questionnaire', $groupname);
             }
             $msg .= '</div>';
+
 
             $urlyes = new moodle_url('report.php', array('action' => 'dvallresp', 'sid' => $sid,
                              'instance' => $instance, 'group' => $currentgroupid));
