@@ -36,7 +36,8 @@ require_once($CFG->dirroot.'/mod/questionnaire/locallib.php');
  */
 class mod_questionnaire_questiontypes_testcase extends advanced_testcase {
     public function test_create_question_checkbox() {
-        $this->create_test_question_with_choices(QUESCHECK, '\\mod_questionnaire\\question\\check', array('content' => 'Check one'));
+        $this->create_test_question_with_choices(QUESCHECK,
+            '\\mod_questionnaire\\question\\check', array('content' => 'Check one'));
     }
 
     public function test_create_question_date() {
@@ -65,11 +66,12 @@ class mod_questionnaire_questiontypes_testcase extends advanced_testcase {
             'content' => 'Enter a number',
             'length' => 10,
             'precise' => 0);
-        $this->create_test_question(QUESNUMERIC, '\\mod_questionnaire\\question\\numeric', $questiondata);
+        $this->create_test_question(QUESNUMERIC, '\\mod_questionnaire\\question\\numerical', $questiondata);
     }
 
     public function test_create_question_radiobuttons() {
-        $this->create_test_question_with_choices(QUESRADIO, '\\mod_questionnaire\\question\\radio', array('content' => 'Choose one'));
+        $this->create_test_question_with_choices(QUESRADIO,
+            '\\mod_questionnaire\\question\\radio', array('content' => 'Choose one'));
     }
 
     public function test_create_question_ratescale() {
@@ -138,7 +140,7 @@ class mod_questionnaire_questiontypes_testcase extends advanced_testcase {
     }
 
     private function create_test_question_with_choices($qtype, $questionclass, $questiondata = array(), $choicedata = null) {
-        if (is_null($choicedata)) {
+        if ($choicedata === null) {
             $choicedata = array(
                 (object)array('content' => 'One', 'value' => 1),
                 (object)array('content' => 'Two', 'value' => 2),
