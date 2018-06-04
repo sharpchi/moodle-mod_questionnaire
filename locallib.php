@@ -197,19 +197,6 @@ function questionnaire_check_date ($thisdate, $insert=false) {
     }
 }
 
-<<<<<<< HEAD
-
-// A variant of Moodle's notify function, with a different formatting.
-function questionnaire_notify($message) {
-    $message = clean_text($message);
-    $errorstart = '<div class="alert alert-info">';
-    $errorend = '</div>';
-    $output = $errorstart.$message.$errorend;
-    echo $output;
-}
-
-=======
->>>>>>> upstream/master
 function questionnaire_choice_values($content) {
 
     // If we run the content through format_text first, any filters we want to use (e.g. multilanguage) should work.
