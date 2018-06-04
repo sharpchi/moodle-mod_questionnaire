@@ -95,20 +95,6 @@ class radio extends base {
         $horizontal = $this->length;
         $ischecked = false;
 
-        // To display or hide dependent questions on Preview page.
-        $onclickdepend = [];
-        $dqids = '';
-        $choices = [];
-        foreach ($dependants as $did => $dependant) {
-            $dqids .= empty($dqids) ? 'qn-' . $did : ',qn-' . $did;
-            foreach ($dependant as $choice) {
-                $choices[$choice->id] .= isset($choices[$choice->id]) ? ',qn-' . $did : 'qn-' . $did;
-            }
-        }
-        foreach ($choices as $key => $choice) {
-            $onclickdepend[$key] = 'depend(\''.$dqids.'\', \''.$choice.'\')';
-        }
-
         $choicetags = new \stdClass();
         $choicetags->qelements = [];
         foreach ($this->choices as $id => $choice) {
@@ -117,19 +103,6 @@ class radio extends base {
             if ($horizontal) {
                 $radio->horizontal = $horizontal;
             }
-
-            // To display or hide dependent questions on Preview page.
-            if ($onclickdepend) {
-                if (isset($onclickdepend[$id])) {
-                    $radio->onclick = $onclickdepend[$id];
-                } else {
-                    // In case this dependchoice is not used by any child question.
-                    $radio->onclick = 'depend(\''.$dependants.'\', \'\')';
-                }
-
-            } else {
-                $radio->onclick = 'other_check_empty(name, value)';
-            } // End dependents.
 
             if ($other !== 0) { // This is a normal radio button.
                 $htmlid = 'auto-rb'.sprintf('%04d', ++$idcounter);
@@ -146,7 +119,6 @@ class radio extends base {
                     $radio->disabled = true;
                     $value = ' ('.$choice->value.') ';
                 }
-                $content = $choice->content;
                 $contents = questionnaire_choice_values($choice->content);
                 $radio->label = $value.format_text($contents->text, FORMAT_HTML, ['noclean' => true]).$contents->image;
             } else {             // Radio button with associated !other text field.
@@ -154,7 +126,6 @@ class radio extends base {
                     $choice->content);
                 $cid = 'q'.$this->id.'_'.$id;
                 $otherempty = false;
-                $otherid = 'q'.$this->id.'_'.$checked;
                 if (substr($checked, 0, 6) == 'other_') { // Fix bug CONTRIB-222.
                     $checked = substr($checked, 6);
                 }
@@ -166,7 +137,7 @@ class radio extends base {
                 if (($id == $checked) || !empty($data->$cid)) {
                     $radio->checked = true;
                     $ischecked = true;
-                    if (!$data->$cid) {
+                    if (isset($data->$cid) && (trim($data->$cid) == false)) {
                         $otherempty = true;
                     }
                 }
@@ -190,17 +161,9 @@ class radio extends base {
                 $radio->horizontal = $horizontal;
             }
 
-            // To display or hide dependent questions on Preview page.
-            $onclick = '';
-            if ($onclickdepend) {
-                $onclick = 'depend(\''.$dependants.'\', \'\')';
-            } else {
-                $onclick = 'other_check_empty(name, value)';
-            } // End dependents.
             $radio->name = 'q'.$this->id;
             $radio->id = $htmlid;
             $radio->value = $id;
-            $radio->onclick = $onclick;
 
             if (!$ischecked && !$blankquestionnaire) {
                 $radio->checked = true;
@@ -271,7 +234,7 @@ class radio extends base {
     public function response_complete($responsedata) {
         if (isset($responsedata->{'q'.$this->id}) && ($this->required()) &&
                 (strpos($responsedata->{'q'.$this->id}, 'other_') !== false)) {
-            return !empty($responsedata->{'q'.$this->id.''.substr($responsedata->{'q'.$this->id}, 5)});
+            return (trim($responsedata->{'q'.$this->id.''.substr($responsedata->{'q'.$this->id}, 5)}) != false);
         } else {
             return parent::response_complete($responsedata);
         }
@@ -286,7 +249,7 @@ class radio extends base {
     public function response_valid($responsedata) {
         if (isset($responsedata->{'q'.$this->id}) && (strpos($responsedata->{'q'.$this->id}, 'other_') !== false)) {
             // False if "other" choice is checked but text box is empty.
-            return !empty($responsedata->{'q'.$this->id.''.substr($responsedata->{'q'.$this->id}, 5)});
+            return (trim($responsedata->{'q'.$this->id.''.substr($responsedata->{'q'.$this->id}, 5)}) != false);
         } else {
             return parent::response_valid($responsedata);
         }

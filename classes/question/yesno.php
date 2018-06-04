@@ -111,24 +111,6 @@ class yesno extends base {
     protected function question_survey_display($data, $dependants=[], $blankquestionnaire=false) {
         global $idcounter;  // To make sure all radio buttons have unique ids. // JR 20 NOV 2007.
 
-        // To display or hide dependent questions on Preview page.
-        $onclickdepend = [];
-        $dqids = '';
-        $choices['y'] = '';
-        $choices['n'] = '';
-        foreach ($dependants as $did => $dependant) {
-            $dqids .= empty($dqids) ? 'qn-'.$did : ',qn-'.$did;
-            foreach ($dependant as $choice) {
-                if ($choice->choiceid == 0) {
-                    $choices['y'] .= empty($choices['y']) ? 'qn-'.$did : ',qn-'.$did;
-                } else {
-                    $choices['n'] .= empty($choices['n']) ? 'qn-'.$did : ',qn-'.$did;
-                }
-            }
-            $onclickdepend['y'] = 'depend(\''.$dqids.'\', \''.$choices['y'].'\')';
-            $onclickdepend['n'] = 'depend(\''.$dqids.'\', \''.$choices['n'].'\')';
-        }
-
         $stryes = get_string('yes');
         $strno = get_string('no');
 
@@ -143,7 +125,6 @@ class yesno extends base {
         $options = [$val1 => $stryes, $val2 => $strno];
         $name = 'q'.$this->id;
         $checked = (isset($data->{'q'.$this->id}) ? $data->{'q'.$this->id} : '');
-        $output = '';
         $ischecked = false;
 
         $choicetags = new \stdClass();
@@ -164,9 +145,6 @@ class yesno extends base {
             if ($blankquestionnaire) {
                 $option->disabled = true;
             }
-            if (isset($onclickdepend[$value])) {
-                $option->onclick = $onclickdepend[$value];
-            }
             $choicetags->qelements->choice[] = $option;
         }
         // CONTRIB-846.
@@ -181,9 +159,6 @@ class yesno extends base {
             $option->label = format_text($content, FORMAT_HTML, ['noclean' => true]);
             if (!$ischecked && !$blankquestionnaire) {
                 $option->checked = true;
-            }
-            if ($onclickdepend) {
-                $option->onclick = 'depend(\''.$dependants.'\', \'\')';
             }
             $choicetags->qelements->choice[] = $option;
         }
