@@ -221,8 +221,6 @@ switch ($action) {
         require_capability('mod/questionnaire:deleteresponses', $context);
 
         if (empty($questionnaire->survey)) {
-            $id = $questionnaire->survey;
-            notify ("questionnaire->survey = /$id/");
             throw new \moodle_exception('surveynotexists', 'mod_questionnaire');
         } else if ($questionnaire->survey->courseid != $course->id) {
             throw new \moodle_exception('surveyowner', 'mod_questionnaire');
@@ -352,9 +350,18 @@ switch ($action) {
             } else {
                 $ruser = $response->userid;
             }
-            error (get_string('couldnotdelresp', 'questionnaire').$rid.get_string('by', 'questionnaire').$ruser.'?',
-                $CFG->wwwroot.'/mod/questionnaire/report.php?action=vresp&amp;sid='.$sid.'&amp;&amp;instance='.
-                $instance.'byresponse=1');
+            $link = new \moodle_url('/mod/questionnaire/report.php', [
+                'action' => 'vresp',
+                'sid' => $sid,
+                'instance' => $instance,
+                'byresponse' => '1',
+            ]);
+            throw new \moodle_exception(
+                'couldnotdelrespby',
+                'mod_questionnaire',
+                $link,
+                ['rid' => $rid, 'user' => $ruser]
+            );
         }
         break;
 
@@ -424,8 +431,12 @@ switch ($action) {
 
             redirect($redirection);
         } else {
-            error (get_string('couldnotdelresp', 'questionnaire'),
-                $CFG->wwwroot.'/mod/questionnaire/report.php?action=vall&amp;sid='.$sid.'&amp;instance='.$instance);
+            $link = new \moodle_url('/mod/questionnaire/report.php', [
+                'action' => 'vall',
+                'sid' => $sid,
+                'instance' => $instance,
+            ]);
+            throw new \moodle_exception('couldnotdelresp', 'mod_questionnaire', $link);
         }
         break;
 
